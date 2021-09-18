@@ -1,0 +1,103 @@
+﻿<Window x:Class="Lab2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Lab2"
+        mc:Ignorable="d"
+        Title="{Binding Title}" Height="450" Width="800"
+        DataContext="{Binding MainWindowModel, Source={StaticResource Locator}}">
+    <Window.Resources>
+        <Style TargetType="DataGrid">
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="CanUserSortColumns" Value="False"/>
+            <Setter Property="AlternatingRowBackground" Value="Aquamarine"/>
+            <Setter Property="VerticalGridLinesBrush" Value="BlueViolet"/>
+            <Setter Property="GridLinesVisibility" Value="Vertical"/>
+        </Style>
+    </Window.Resources>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Close" Command="{StaticResource CloseWindowCommand}"/>
+            </MenuItem>
+            <MenuItem Header="Help"/>
+        </Menu>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem Content="{Binding Status}"/>
+        </StatusBar>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <GroupBox Grid.Column="0" Header="Ввод данных">
+                <DockPanel Margin="0,5">
+                    <StackPanel DockPanel.Dock="Top">
+                        <TextBlock Text="Получить таблицу из файла"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
+                            <TextBox Width="250"/>
+                            <Button Content="Открыть" Width="50" Margin="5,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <UniformGrid Columns="2" Rows="2" DockPanel.Dock="Bottom">
+                        <UniformGrid.Resources>
+                            <Style TargetType="Button">
+                                <Setter Property="Margin" Value="5"/>
+                            </Style>
+                        </UniformGrid.Resources>
+                        <Button Content="Добавить"/>
+                        <Button Content="Удалить выбранную"/>
+                        <Button Content="Перезагрузить"/>
+                        <Button Content="Очистить"/>
+                    </UniformGrid>
+                    <DockPanel>
+                        <TextBlock Text="Исходная таблица" DockPanel.Dock="Top" Margin="0,5"/>
+                        <DataGrid>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Событие А" Width="*"/>
+                                <DataGridTextColumn Header="Событие В" Width="*"/>
+                                <DataGridTextColumn Header="Длительность работы" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </DockPanel>
+            </GroupBox>
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <Button Content="→" Width="75"/>
+            </StackPanel>
+            <GroupBox Header="Вывод данных" Grid.Column="2">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="3*"/>
+                        <RowDefinition Height="2*"/>
+                    </Grid.RowDefinitions>
+                    <DockPanel Grid.Row="0" Margin="0,5">
+                        <TextBlock Text="Частично упорядоченный график" DockPanel.Dock="Top"/>
+                        <Button Content="Очистить" DockPanel.Dock="Bottom" Width="75" HorizontalAlignment="Right"/>
+                        <DataGrid Margin="0,5">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Событие А" Width="*"/>
+                                <DataGridTextColumn Header="Событие В" Width="*"/>
+                                <DataGridTextColumn Header="Длительность работы" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                    <DockPanel Grid.Row="1">
+                        <TextBlock Text="Список полных путей" DockPanel.Dock="Top"/>
+                        <Button Content="Очистить" DockPanel.Dock="Bottom" Width="75" HorizontalAlignment="Right"/>
+                        <ListBox Margin="0,5"/>
+                    </DockPanel>
+                    <DockPanel Grid.Row="2">
+                        <TextBlock Text="Лог событий" DockPanel.Dock="Top" Margin="0,5"/>
+                        <RichTextBox/>
+                    </DockPanel>
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </DockPanel>
+</Window>
