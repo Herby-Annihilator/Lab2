@@ -21,6 +21,10 @@ namespace Lab2.ViewModels
 			RemoveSelectedWorkCommand = new LambdaCommand(OnRemoveSelectedWorkCommandExecuted, CanRemoveSelectedWorkCommandExecute);
 			ClearSourceTableCommand = new LambdaCommand(OnClearSourceTableCommandExecuted, CanClearSourceTableCommandExecute);
 			ReloadSourceTableCommand = new LambdaCommand(OnReloadSourceTableCommandExecuted, CanReloadSourceTableCommandExecute);
+			BrowseCommand = new LambdaCommand(OnBrowseCommandExecuted, CanBrowseCommandExecute);
+			ClearFinalTableCommand = new LambdaCommand(OnClearFinalTableCommandExecuted, CanClearFinalTableCommandExecute);
+			ClearListBoxCommand = new LambdaCommand(OnClearListBoxCommandExecuted, CanClearListBoxCommandExecute);
+			FullPathsInTheGraph.Add("4, 5, 9, 8, 10");
 		}
 
 		#region Properties
@@ -38,6 +42,10 @@ namespace Lab2.ViewModels
 
 		public ObservableCollection<Work> FinalTable { get; set; } = new ObservableCollection<Work>();
 
+		public ObservableCollection<string> FullPathsInTheGraph { get; set; } = new ObservableCollection<string>();
+
+		public ObservableCollection<string> Log { get; set; } = new ObservableCollection<string>();
+
 		private ObservableCollection<Work> _workingTable;
 		#endregion
 
@@ -51,10 +59,12 @@ namespace Lab2.ViewModels
 			{
 				SourceTable.Add(new Work(0, 0, 0));
 				Status = "Добавлена новая работа с параметрами: 0, 0, 0";
+				Log.Add(Status);
 			}
 			catch(Exception e)
 			{
 				Status = e.Message;
+				Log.Add(Status);
 			}			
 		}
 		private bool CanAddWorkCommandExecute(object p) => true;
@@ -69,10 +79,12 @@ namespace Lab2.ViewModels
 				SourceTable.Remove(SelectedWork);
 				SelectedWork = null;
 				Status = "Выбранная работа удалена";
+				Log.Add(Status);
 			}
 			catch(Exception e)
 			{
 				Status = e.Message;
+				Log.Add(Status);
 			}			
 		}
 		private bool CanRemoveSelectedWorkCommandExecute(object p) => SelectedWork != null;
@@ -86,10 +98,12 @@ namespace Lab2.ViewModels
 			{
 				SourceTable.Clear();
 				Status = "Начальная таблица очищена";
+				Log.Add(Status);
 			}
 			catch (Exception e)
 			{
 				Status = e.Message;
+				Log.Add(Status);
 			}
 		}
 		private bool CanClearSourceTableCommandExecute(object p) => SourceTable.Count > 0;
@@ -101,23 +115,89 @@ namespace Lab2.ViewModels
 		{
 			try
 			{
-				string fileName = Path.Substring(Path.LastIndexOf("\\") + 1);
-				if (File.Exists(fileName))
+				if (File.Exists(Path))
 				{
 					SourceTable.Clear();
-					LoadSourceTable(fileName);
+					LoadSourceTable(Path);
 				}
 				else
 				{
 					Status = $"Файл {Path} не существует";
+					Log.Add(Status);
 				}
 			}
 			catch (Exception e)
 			{
 				Status = e.Message;
+				Log.Add(Status);
 			}
 		}
 		private bool CanReloadSourceTableCommandExecute(object p) => !string.IsNullOrWhiteSpace(Path);
+		#endregion
+
+		#region BrowseCommand
+		public ICommand BrowseCommand { get; }
+		private void OnBrowseCommandExecuted(object p)
+		{
+			try
+			{
+				Status = "Открытие файла";
+				Log.Add(Status);
+				OpenFileDialog dialog = new OpenFileDialog();
+				dialog.InitialDirectory = Environment.CurrentDirectory;
+				dialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+				if (dialog.ShowDialog() == true)
+				{
+					Path = dialog.FileName;
+				}
+				Status = "Открытие файла завершено";
+				Log.Add(Status);
+			}
+			catch (Exception e)
+			{
+				Status = e.Message;
+				Log.Add(Status);
+			}
+		}
+		private bool CanBrowseCommandExecute(object p) => true;
+		#endregion
+
+		#region ClearFinalTableCommand
+		public ICommand ClearFinalTableCommand { get; }
+		private void OnClearFinalTableCommandExecuted(object p)
+		{
+			try
+			{
+				FinalTable.Clear();
+				Status = "Итоговая таблица очищена";
+				Log.Add(Status);
+			}
+			catch (Exception e)
+			{
+				Status = e.Message;
+				Log.Add(Status);
+			}
+		}
+		private bool CanClearFinalTableCommandExecute(object p) => FinalTable.Count > 0;
+		#endregion
+
+		#region ClearListBoxCommand
+		public ICommand ClearListBoxCommand{ get; }
+		private void OnClearListBoxCommandExecuted(object p)
+		{
+			try
+			{
+				FullPathsInTheGraph.Clear();
+				Status = "Список путей очищен";
+				Log.Add(Status);
+			}
+			catch (Exception e)
+			{
+				Status = e.Message;
+				Log.Add(Status);
+			}
+		}
+		private bool CanClearListBoxCommandExecute(object p) => FullPathsInTheGraph.Count > 0;
 		#endregion
 
 		#endregion

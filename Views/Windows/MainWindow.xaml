@@ -39,8 +39,9 @@
                     <StackPanel DockPanel.Dock="Top">
                         <TextBlock Text="Получить таблицу из файла"/>
                         <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <TextBox Width="250"/>
-                            <Button Content="Открыть" Width="50" Margin="5,0"/>
+                            <TextBox Width="250" Text="{Binding Path=Path, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Button Content="Открыть" Width="50" Margin="5,0"
+                                    Command="{Binding BrowseCommand}"/>
                         </StackPanel>
                     </StackPanel>
                     <UniformGrid Columns="2" Rows="2" DockPanel.Dock="Bottom">
@@ -49,18 +50,18 @@
                                 <Setter Property="Margin" Value="5"/>
                             </Style>
                         </UniformGrid.Resources>
-                        <Button Content="Добавить"/>
-                        <Button Content="Удалить выбранную"/>
-                        <Button Content="Перезагрузить"/>
-                        <Button Content="Очистить"/>
+                        <Button Content="Добавить" Command="{Binding AddWorkCommand}"/>
+                        <Button Content="Удалить выбранную" Command="{Binding RemoveSelectedWorkCommand}"/>
+                        <Button Content="Перезагрузить" Command="{Binding ReloadSourceTableCommand}"/>
+                        <Button Content="Очистить" Command="{Binding ClearSourceTableCommand}"/>
                     </UniformGrid>
                     <DockPanel>
                         <TextBlock Text="Исходная таблица" DockPanel.Dock="Top" Margin="0,5"/>
-                        <DataGrid>
+                        <DataGrid ItemsSource="{Binding SourceTable}" SelectedItem="{Binding SelectedWork}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Событие А" Width="*"/>
-                                <DataGridTextColumn Header="Событие В" Width="*"/>
-                                <DataGridTextColumn Header="Длительность работы" Width="*"/>
+                                <DataGridTextColumn Header="Событие А" Width="*" Binding="{Binding FirstEventID}"/>
+                                <DataGridTextColumn Header="Событие В" Width="*" Binding="{Binding SecondEventID}"/>
+                                <DataGridTextColumn Header="Длительность работы" Width="*" Binding="{Binding Length}"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </DockPanel>
@@ -78,23 +79,25 @@
                     </Grid.RowDefinitions>
                     <DockPanel Grid.Row="0" Margin="0,5">
                         <TextBlock Text="Частично упорядоченный график" DockPanel.Dock="Top"/>
-                        <Button Content="Очистить" DockPanel.Dock="Bottom" Width="75" HorizontalAlignment="Right"/>
-                        <DataGrid Margin="0,5">
+                        <Button Content="Очистить" DockPanel.Dock="Bottom" Width="75" HorizontalAlignment="Right"
+                                Command="{Binding ClearFinalTableCommand}"/>
+                        <DataGrid Margin="0,5" ItemsSource="{Binding FinalTable}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Событие А" Width="*"/>
-                                <DataGridTextColumn Header="Событие В" Width="*"/>
-                                <DataGridTextColumn Header="Длительность работы" Width="*"/>
+                                <DataGridTextColumn Header="Событие А" Width="*" Binding="{Binding FirstEventID}"/>
+                                <DataGridTextColumn Header="Событие В" Width="*" Binding="{Binding SecondEventID}"/>
+                                <DataGridTextColumn Header="Длительность работы" Width="*" Binding="{Binding Length}"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </DockPanel>
                     <DockPanel Grid.Row="1">
                         <TextBlock Text="Список полных путей" DockPanel.Dock="Top"/>
-                        <Button Content="Очистить" DockPanel.Dock="Bottom" Width="75" HorizontalAlignment="Right"/>
-                        <ListBox Margin="0,5"/>
+                        <Button Content="Очистить" DockPanel.Dock="Bottom" Width="75" HorizontalAlignment="Right"
+                                Command="{Binding ClearListBoxCommand}"/>
+                        <ListBox Margin="0,5" ItemsSource="{Binding FullPathsInTheGraph}"/>
                     </DockPanel>
                     <DockPanel Grid.Row="2">
                         <TextBlock Text="Лог событий" DockPanel.Dock="Top" Margin="0,5"/>
-                        <RichTextBox/>
+                        <ListBox ItemsSource="{Binding Log}"/>
                     </DockPanel>
                 </Grid>
             </GroupBox>
