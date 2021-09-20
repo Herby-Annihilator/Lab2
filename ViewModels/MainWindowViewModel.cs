@@ -218,7 +218,10 @@ namespace Lab2.ViewModels
 				//
 				//Work startWork = FindStartWork(_workingTable.ToArray());
 				FindCycles(_workingTable);
-
+				_workingTable = Streamline(_workingTable);
+				FindEndWork(_workingTable);
+				FindCycles(_workingTable);
+				// найти полные пути и збс
 			}
 			catch(CyclesFoundException e)
 			{
@@ -391,6 +394,39 @@ namespace Lab2.ViewModels
 				if (work.FirstEventID == vertexID || work.SecondEventID == vertexID)
 					works.Remove(work);
 			}
+		}
+
+		private List<Work> Streamline(List<Work> source)
+		{
+			List<int> processedVerticies = new List<int>();
+			List<Work> works = new List<Work>();
+			CopySourceTableToWorkingTable(source, works);
+			List<Work> result = new List<Work>();
+			Queue<int> toProcess = new Queue<int>(source.Count / 2);
+			toProcess.Enqueue(works[0].FirstEventID);
+			int currentVertex;
+			while (toProcess.Count > 0)
+			{
+				currentVertex = toProcess.Dequeue();
+				foreach (Work work in works)
+				{
+					if (work.FirstEventID == currentVertex)
+					{
+						if (!processedVerticies.Contains(work.SecondEventID))
+						{
+							toProcess.Enqueue(work.SecondEventID);							
+						}
+						result.Add(work);
+						works.Remove(work);
+					}
+				}			
+			}
+			return result;
+		}
+
+		private void FindEndWork(List<Work> source)
+		{
+
 		}
 	}
 }
