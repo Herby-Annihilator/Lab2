@@ -16,5 +16,9 @@ namespace Lab2.Models.Data
 			SecondEventID = secondEventID;
 			Length = length;
 		}
+
+		public Work Clone() => new Work(FirstEventID, SecondEventID, Length);
+
+		public override string ToString() => $"{FirstEventID} → {SecondEventID} = {Length}";
 	}
 }

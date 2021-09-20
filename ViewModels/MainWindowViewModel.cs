@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Markup;
 
@@ -24,6 +25,7 @@ namespace Lab2.ViewModels
 			BrowseCommand = new LambdaCommand(OnBrowseCommandExecuted, CanBrowseCommandExecute);
 			ClearFinalTableCommand = new LambdaCommand(OnClearFinalTableCommandExecuted, CanClearFinalTableCommandExecute);
 			ClearListBoxCommand = new LambdaCommand(OnClearListBoxCommandExecuted, CanClearListBoxCommandExecute);
+			StreamlineCommand = new LambdaCommand(OnStreamlineCommandExecuted, CanStreamlineCommandExecute);
 			FullPathsInTheGraph.Add("4, 5, 9, 8, 10");
 		}
 
@@ -46,7 +48,7 @@ namespace Lab2.ViewModels
 
 		public ObservableCollection<string> Log { get; set; } = new ObservableCollection<string>();
 
-		private ObservableCollection<Work> _workingTable;
+		private List<Work> _workingTable;
 		#endregion
 
 		#region Commands
@@ -200,6 +202,38 @@ namespace Lab2.ViewModels
 		private bool CanClearListBoxCommandExecute(object p) => FullPathsInTheGraph.Count > 0;
 		#endregion
 
+		#region StreamlineCommand
+		public ICommand StreamlineCommand { get; }
+		private void OnStreamlineCommandExecuted(object p)
+		{
+			try
+			{
+				_workingTable = new List<Work>();
+				CopySourceTableToWorkingTable(SourceTable, _workingTable);
+				_workingTable.Sort(SortAscending);
+				RemoveLoops(_workingTable);
+				RemoveRepeatedWorksFromTable(_workingTable);
+				//
+				// начальная работа есть в списке и находится в его начале
+				//
+				//Work startWork = FindStartWork(_workingTable.ToArray());
+				FindCycles(_workingTable);
+
+			}
+			catch(CyclesFoundException e)
+			{
+				MessageBox.Show(e.ToString() + "\r\nИсправьте начальные данные", "Найден цикл", MessageBoxButton.OK, MessageBoxImage.Warning);
+				Log.Add(e.ToString());
+			}
+			catch (Exception e)
+			{
+				Status = e.Message;
+				Log.Add(Status);
+			}
+		}
+		private bool CanStreamlineCommandExecute(object p) => SourceTable.Count > 0;
+		#endregion
+
 		#endregion
 
 		private void LoadSourceTable(string fileName)  //  формат файла: число число число
@@ -220,6 +254,143 @@ namespace Lab2.ViewModels
 				}
 			}
 			reader.Close();
+		}
+
+		private void CopySourceTableToWorkingTable(ICollection<Work> source, ICollection<Work> working)
+		{
+			foreach (Work work in source)
+			{
+				working.Add(work.Clone());
+			}
+		}
+
+		private int SortAscending(Work first, Work second)
+		{
+			if (first.FirstEventID > second.FirstEventID) return 1;
+			if (first.FirstEventID < second.FirstEventID) return -1;
+			return 0;
+		}
+
+		private int SortDescending(Work first, Work second)
+		{
+			if (first.FirstEventID > second.FirstEventID) return -1;
+			if (first.FirstEventID < second.FirstEventID) return 1;
+			return 0;
+		}
+
+		private void RemoveRepeatedWorksFromTable(List<Work> works)
+		{
+			Work prevWork = null;
+			foreach (Work work in works)
+			{
+				if (prevWork == null)
+				{
+					prevWork = work;
+					continue;
+				}
+				if (prevWork.FirstEventID == work.FirstEventID)
+				{
+					if (prevWork.SecondEventID == work.SecondEventID)
+					{
+						if (prevWork.Length == work.Length)
+						{
+							_workingTable.Remove(prevWork);
+							Log.Add($"Работа {prevWork} удалена из-за повтора");
+						}
+						else
+						{
+
+						}
+					}
+				}
+				prevWork = work;
+			}
+		}
+
+		private Work FindStartWork(Work[] works)
+		{
+			Work result;
+
+			return result;
+		}
+
+		private void RemoveLoops(List<Work> works)
+		{
+			foreach (Work work in works)
+			{
+				if (work.FirstEventID == work.SecondEventID)
+				{
+					works.Remove(work);
+					Log.Add($"Петля {work.FirstEventID} → {work.SecondEventID} удалена");
+				}
+			}
+		}
+
+		private void FindCycles(List<Work> works)
+		{
+			List<int> vertecies = new List<int>();
+			foreach (Work work in works)
+			{
+				if (!vertecies.Contains(work.FirstEventID))
+					vertecies.Add(work.FirstEventID);
+				if (!vertecies.Contains(work.SecondEventID))
+					vertecies.Add(work.SecondEventID);
+			}
+			List<Work> edges = new List<Work>();
+			CopySourceTableToWorkingTable(works, edges);
+			bool vertexHasNoOutsideEdges = true;
+			bool vertexHasNoInsideEdges = true;
+			int currentVertex;
+			while ((vertexHasNoOutsideEdges || vertexHasNoInsideEdges) && edges.Count > 0)
+			{
+				currentVertex = vertecies[0];
+				vertexHasNoOutsideEdges = VertexHasNoOutsideEdges(edges, currentVertex);
+				if (vertexHasNoOutsideEdges)
+				{
+					RemoveEdgeWithSpecifiedVertex(edges, currentVertex);
+					vertecies.Remove(currentVertex);
+				}
+				else
+				{
+					vertexHasNoInsideEdges = VerterxHasNoInsideEdges(edges, currentVertex);
+					if (vertexHasNoInsideEdges)
+					{
+						RemoveEdgeWithSpecifiedVertex(edges, currentVertex);
+						vertecies.Remove(currentVertex);
+					}
+				}				
+			}
+			if (edges.Count > 0)
+				throw new CyclesFoundException(edges, vertecies);
+		}
+
+		private bool VertexHasNoOutsideEdges(List<Work> edges, int vertexID)
+		{
+			foreach (Work work in edges)
+			{
+				if (work.SecondEventID == vertexID)
+					return false;
+			}
+			return true;
+		}
+
+		private bool VerterxHasNoInsideEdges(List<Work> edges, int vertexID)
+		{
+			foreach (Work edge in edges)
+			{
+				if (edge.FirstEventID == vertexID)
+					return false;
+			}
+			return true;
+		}
+
+		private void RemoveEdgeWithSpecifiedVertex(List<Work> works, int vertexID)
+		{
+			foreach (Work work in works)
+			{
+				if (work.FirstEventID == vertexID || work.SecondEventID == vertexID)
+					works.Remove(work);
+			}
 		}
 	}
 }
