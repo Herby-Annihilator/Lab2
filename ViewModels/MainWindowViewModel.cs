@@ -310,11 +310,40 @@ namespace Lab2.ViewModels
 			}
 		}
 
-		private Work FindStartWork(Work[] works)
+		private Work FindStartWork(List<Work> works)
 		{
 			Work result;
+			List<int> vertecies = GetVerteciesList(works);
+			List<int> startVertecies = new List<int>();
+			foreach (int vertex in vertecies)
+			{
+				if (VerterxHasNoInsideEdges(works, vertex))
+				{
+					startVertecies.Add(vertex);
+				}
+			}
+			if (startVertecies.Count > 1)
+			{
 
+			}
+			if (startVertecies.Count == 0)
+			{
+
+			}
 			return result;
+		}
+
+		private List<int> GetVerteciesList(List<Work> works)
+		{
+			List<int> vertecies = new List<int>();
+			foreach (Work work in works)
+			{
+				if (!vertecies.Contains(work.FirstEventID))
+					vertecies.Add(work.FirstEventID);
+				if (!vertecies.Contains(work.SecondEventID))
+					vertecies.Add(work.SecondEventID);
+			}
+			return vertecies;
 		}
 
 		private void RemoveLoops(List<Work> works)
