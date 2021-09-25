@@ -312,7 +312,7 @@ namespace Lab2.ViewModels
 
 		private Work FindStartWork(List<Work> works)
 		{
-			Work result;
+			Work result = null;
 			List<int> vertecies = GetVerteciesList(works);
 			List<int> startVertecies = new List<int>();
 			foreach (int vertex in vertecies)

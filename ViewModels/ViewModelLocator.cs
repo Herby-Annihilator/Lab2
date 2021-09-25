@@ -7,6 +7,10 @@ namespace Lab2.ViewModels
 {
 	public class ViewModelLocator
 	{
-		public MainWindowViewModel MainWindowModel => App.Services.GetRequiredService<MainWindowViewModel>();
+		public MainWindowViewModel MainWindowModel => 
+			App.Services.GetRequiredService<MainWindowViewModel>();
+		
+		public EditingWindowViewModel EditingWindowModel => 
+			App.Services.GetRequiredService<EditingWindowViewModel>();
 	}
 }

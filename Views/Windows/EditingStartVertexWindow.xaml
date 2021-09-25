@@ -5,10 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lab2.Views.Windows"
         mc:Ignorable="d"
-        Title="EditingStartVertexWindow" Height="450" Width="800">
+        DataContext="{Binding EditingWindowModel, Source={StaticResource Locator}}"
+        Title="{Binding Title}" Height="450" Width="800">
+
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom">
-            <StatusBarItem Content="123"/>
+            <StatusBarItem Content="{Binding Title}"/>
         </StatusBar>
         <Grid>
             <Grid.RowDefinitions>
@@ -82,7 +84,7 @@
                         <TextBox Grid.Row="0" Grid.Column="1" Text="412345"/>
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Индексы вершин, с которыми нужно соединить фиктивную" TextWrapping="Wrap"/>
                         <TextBox Grid.Row="1" Grid.Column="1" Text="54654"/>
-                        <Button Grid.Row="2" Grid.Column="1" Content="Создать" VerticalAlignment="Bottom"/>
+                        <Button Grid.Row="2" Grid.Column="1" Content="Создать" VerticalAlignment="Bottom" Margin="0,5"/>
                     </Grid>
                 </GroupBox>
             </Grid>
