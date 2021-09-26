@@ -19,11 +19,14 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <StackPanel Margin="0,15" HorizontalAlignment="Center">
-                <TextBlock Text="Найдено несколько начальных врешин."/>
+                <TextBlock Text="{Binding MeaningLine}"/>
                 <TextBlock Text="Выберите действие." Margin="0,7" HorizontalAlignment="Center"/>
-                <RadioButton Content="Удаление вершин"/>
-                <RadioButton Content="Удаление работ" Margin="0,2"/>
-                <RadioButton Content="Добавить фиктивную вершину"/>
+                <RadioButton Content="Удаление вершин" IsChecked="{Binding DeletingVerticesIsNecessary}"
+                             Command="{Binding ChoiceOfActionCommand}" CommandParameter="delete vertices"/>
+                <RadioButton Content="Удаление работ" Margin="0,2" IsChecked="{Binding DeletingEdgesIsNecessary}"
+                             Command="{Binding ChoiceOfActionCommand}" CommandParameter="delete edges"/>
+                <RadioButton Content="Добавить фиктивную вершину" IsChecked="{Binding AddingFakeVertexIsNecessary}"
+                             Command="{Binding ChoiceOfActionCommand}" CommandParameter="add fake"/>
             </StackPanel>
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
@@ -31,7 +34,8 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <GroupBox Grid.Column="0" Header="Удаление вершин">
+                <GroupBox Grid.Column="0" Header="Удаление вершин" 
+                          IsEnabled="{Binding DeletingVerticesIsNecessary}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -40,24 +44,26 @@
                         <UniformGrid Grid.Row="0" Columns="2">
                             <DockPanel Margin="2,2">
                                 <TextBlock DockPanel.Dock="Top" Text="Вершины для удаления" TextWrapping="Wrap"/>
-                                <ListBox Margin="0,3"/>
+                                <ListBox Margin="0,3" ItemsSource="{Binding VerticesCanBeDeleted}" SelectedItem="{Binding SelectedVertexToDelete}"/>
                             </DockPanel>
                             <DockPanel Margin="2,2">
                                 <TextBlock DockPanel.Dock="Top" Text="Будут удалены следующие ребра" TextWrapping="Wrap"/>
-                                <ListBox Margin="0,3"/>
+                                <ListBox Margin="0,3" ItemsSource="{Binding AdjacencyEdgesWillBeDeleted}"/>
                             </DockPanel>
                         </UniformGrid>
                         <Button Grid.Row="1" Content="Удалить" Margin="0,5" HorizontalAlignment="Right" Width="125"/>
                     </Grid>
                 </GroupBox>
-                <GroupBox Grid.Column="1" Header="Удаление работ">
+                <GroupBox Grid.Column="1" Header="Удаление работ"
+                          IsEnabled="{Binding DeletingVerticesIsNecessary}">
                     <DockPanel>
                         <TextBlock Text="Удаляемые работы" DockPanel.Dock="Top"/>
                         <Button Content="Удалить выбранную" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5"/>
                         <ListBox/>
                     </DockPanel>
                 </GroupBox>
-                <GroupBox Grid.Column="2" Header="Добавление фиктивной вершины">
+                <GroupBox Grid.Column="2" Header="Добавление фиктивной вершины"
+                          IsEnabled="{Binding AddingFakeVertexIsNecessary}">
                     <Grid>
                         <Grid.Resources>
                             <Style TargetType="TextBlock">
@@ -81,9 +87,9 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="Индекс фиктивной вершины" TextWrapping="Wrap"/>
-                        <TextBox Grid.Row="0" Grid.Column="1" Text="412345"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding FakeVertexIndex, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Индексы вершин, с которыми нужно соединить фиктивную" TextWrapping="Wrap"/>
-                        <TextBox Grid.Row="1" Grid.Column="1" Text="54654"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding IndexesToConnectWithFakeVertex, UpdateSourceTrigger=PropertyChanged}"/>
                         <Button Grid.Row="2" Grid.Column="1" Content="Создать" VerticalAlignment="Bottom" Margin="0,5"/>
                     </Grid>
                 </GroupBox>

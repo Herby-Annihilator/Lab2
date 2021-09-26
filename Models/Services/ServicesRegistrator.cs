@@ -7,8 +7,9 @@ namespace Lab2.Models.Services
 {
 	public static class ServicesRegistrator
 	{
-		public static IServiceCollection AddServices(this IServiceCollection services) => services
+		public static IServiceCollection AddServices(this IServiceCollection services) => services.AddSingleton<Exchanger>()
 		// Register your services here
+		
 		;
 	}
 }
