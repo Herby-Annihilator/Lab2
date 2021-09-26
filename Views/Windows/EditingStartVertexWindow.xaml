@@ -94,7 +94,8 @@
                     </Grid>
                 </GroupBox>
             </Grid>
-            <Button Grid.Row="2" Content="Ок" HorizontalAlignment="Right" Width="125" Margin="5,5,5,3"/>
+            <Button Grid.Row="2" Content="Ок" HorizontalAlignment="Right" Width="125" Margin="5,5,5,3"
+                    Command="{Binding AcceptCommand}"/>
         </Grid>
     </DockPanel>
 </Window>

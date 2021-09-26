@@ -1,6 +1,9 @@
 ﻿using Lab2.Infrastructure.Commands;
 using Lab2.Models.Data;
+using Lab2.Models.Services;
 using Lab2.ViewModels.Base;
+using Lab2.Views.Windows;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -16,6 +19,7 @@ namespace Lab2.ViewModels
 	[MarkupExtensionReturnType(typeof(MainWindowViewModel))]
 	public class MainWindowViewModel : ViewModel
 	{
+		private Exchanger _exchanger = App.Services.GetRequiredService<Exchanger>();
 		public MainWindowViewModel()
 		{
 			AddWorkCommand = new LambdaCommand(OnAddWorkCommandExecuted, CanAddWorkCommandExecute);
@@ -27,6 +31,8 @@ namespace Lab2.ViewModels
 			ClearListBoxCommand = new LambdaCommand(OnClearListBoxCommandExecuted, CanClearListBoxCommandExecute);
 			StreamlineCommand = new LambdaCommand(OnStreamlineCommandExecuted, CanStreamlineCommandExecute);
 			FullPathsInTheGraph.Add("4, 5, 9, 8, 10");
+			ShowWindowCommand = new LambdaCommand(OnShowWindowCommandExecuted,
+				CanShowWindowCommandExecute);
 		}
 
 		#region Properties
@@ -52,6 +58,30 @@ namespace Lab2.ViewModels
 		#endregion
 
 		#region Commands
+
+		#region ShowWindowCommand
+		public ICommand ShowWindowCommand { get; }
+		private void OnShowWindowCommandExecuted(object p)
+		{
+			try
+			{
+				Window window = new EditingStartVertexWindow();
+				((EditingWindowViewModel)(window.DataContext)).EditingMode = 
+					EditingMode.EndVertexMode;
+				((EditingWindowViewModel)(window.DataContext)).MeaningLine = 
+					"Найдено несколько конечных вершин";
+				_exchanger.CurrentTable = _workingTable;
+				window.ShowDialog();
+				Log.Add("Окно открыто");
+			}
+			catch (Exception e)
+			{
+				Status = e.Message;
+				Log.Add(Status);
+			}
+		}
+		private bool CanShowWindowCommandExecute(object p) => true; 
+		#endregion
 
 		#region AddWorkCommand
 		public ICommand AddWorkCommand { get; }

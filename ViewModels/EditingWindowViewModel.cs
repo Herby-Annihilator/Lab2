@@ -22,13 +22,18 @@ namespace Lab2.ViewModels
 		public EditingWindowViewModel()
 		{
 			_exchanger = App.Services.GetRequiredService<Exchanger>();
-			
+			PrepareVerticesDeleting();
+			PrepareEdgesDeleting();
 			ChoiceOfActionCommand = new LambdaCommand(OnChoiceOfActionCommandExecuted,
 				CanChoiceOfActionCommandExecute);
 			AddFakeVertexCommand = new LambdaCommand(OnAddFakeVertexCommandExecuted,
 				CanAddFakeVertexCommandExecute);
 			DeleteVerticesCommand = new LambdaCommand(OnDeleteVerticesCommandExecuted,
 				CanDeleteVerticesCommandExecute);
+			DeleteEdgesCommand = new LambdaCommand(OnDeleteEdgesCommandExecuted,
+				CanDeleteEdgesCommandExecute);
+			AcceptCommand = new LambdaCommand(OnAcceptCommandExecuted,
+				CanAcceptCommandExecute);
 		}
 
 		#region Properties
@@ -70,6 +75,8 @@ namespace Lab2.ViewModels
 			set => Set(ref _deletingEdgesIsNecessary, value);
 		}
 
+		private List<Work> _createdWorks = new List<Work>();
+
 		public ObservableCollection<int> VerticesCanBeDeleted { get; set; } = 
 			new ObservableCollection<int>();
 
@@ -97,6 +104,13 @@ namespace Lab2.ViewModels
 
 		public ObservableCollection<Work> AdjacencyEdgesWillBeDeleted { get; set; } =
 			new ObservableCollection<Work>();
+
+		public ObservableCollection<Work> WorksThatCanBeDeleted { get; set; } =
+			new ObservableCollection<Work>();
+
+		public Work SelectedWorkToDelete { get; set; }
+
+		private List<Work> _deletedWorks = new List<Work>();
 
 		#endregion
 
@@ -154,12 +168,85 @@ namespace Lab2.ViewModels
 		public ICommand DeleteVerticesCommand { get; }
 		private void OnDeleteVerticesCommandExecuted(object p)
 		{
-			_deletedVertices.Add(SelectedVertexToDelete);
-			VerticesCanBeDeleted.Remove(SelectedVertexToDelete);
-			AdjacencyEdgesWillBeDeleted.Clear();
-			_deletingCommandExecute = false;
+			try
+			{
+				_deletedVertices.Add(SelectedVertexToDelete);
+				VerticesCanBeDeleted.Remove(SelectedVertexToDelete);
+				AdjacencyEdgesWillBeDeleted.Clear();
+				_deletingCommandExecute = false;
+				Status = $"Вершина {SelectedVertexToDelete} удалена";
+			}
+			catch(Exception e)
+			{
+				Status = e.Message;
+			}			
 		}
-		private bool CanDeleteVerticesCommandExecute(object p) => _deletingCommandExecute; 
+		private bool CanDeleteVerticesCommandExecute(object p) => _deletingCommandExecute;
+		#endregion
+
+		#region DeleteEdgesCommand
+		public ICommand DeleteEdgesCommand { get; }
+		private void OnDeleteEdgesCommandExecuted(object p)
+		{
+			try
+			{
+				_deletedWorks.Add(SelectedWorkToDelete);
+				WorksThatCanBeDeleted.Remove(SelectedWorkToDelete);
+				Status = $"Работа {SelectedWorkToDelete} удалена";
+				SelectedWorkToDelete = null;
+			}
+			catch (Exception e)
+			{
+				Status = e.Message;
+			}
+		}
+		private bool CanDeleteEdgesCommandExecute(object p) => SelectedWorkToDelete != null;
+		#endregion
+
+		#region AcceptCommand  
+		public ICommand AcceptCommand { get; } // будут приняты только те изменения, которые 
+												// редактируются в данный момент, т.е. на 
+												// которые указывают флаги
+		private void OnAcceptCommandExecuted(object p)
+		{
+			try
+			{
+				if (AddingFakeVertexIsNecessary)
+				{
+					if (EditingMode == EditingMode.StartVertexMode)
+						_exchanger.CurrentTable.InsertRange(0, _createdWorks);
+					else
+						_exchanger.CurrentTable.AddRange(_createdWorks);
+					Status = "Изменения применены";
+				}
+				else if (DeletingVerticesIsNecessary)
+				{
+					foreach (int vertex in _deletedVertices)
+					{
+						foreach (Work work in _exchanger.CurrentTable)
+						{
+							if (work.FirstEventID == vertex || work.SecondEventID == vertex)
+								_exchanger.CurrentTable.Remove(work);
+						}
+					}
+					Status = "Изменения применены";
+				}
+				else if (DeletingEdgesIsNecessary)
+				{
+					foreach (Work work in _deletedWorks)
+					{
+						_exchanger.CurrentTable.Remove(work);
+					}
+					Status = "Изменения применены";
+				}
+				App.ActivedWindow.Close();
+			}
+			catch (Exception e)
+			{
+				Status = e.Message;
+			}
+		}
+		private bool CanAcceptCommandExecute(object p) => true; 
 		#endregion
 
 		#endregion
@@ -189,13 +276,20 @@ namespace Lab2.ViewModels
 
 		private void Connect(int fakeVertexIndex, int[] indexes)
 		{
+			_createdWorks.Clear();
 			if (EditingMode == EditingMode.StartVertexMode)
 			{
-
+				for (int i = 0; i < indexes.Length; i++)
+				{
+					_createdWorks.Add(new Work(fakeVertexIndex, indexes[i], 0));
+				}
 			}
 			else
 			{
-
+				for (int i = 0; i < indexes.Length; i++)
+				{
+					_createdWorks.Add(new Work(indexes[i], fakeVertexIndex, 0));
+				}
 			}
 		}
 
@@ -209,6 +303,15 @@ namespace Lab2.ViewModels
 			}
 			SelectedVertexToDelete = VerticesCanBeDeleted.Count > 0 ? VerticesCanBeDeleted[0] :
 				0;
+		}
+
+		private void PrepareEdgesDeleting()
+		{
+			WorksThatCanBeDeleted.Clear();
+			foreach (Work work in _exchanger.WorksThatCanBeDeleted)
+			{
+				WorksThatCanBeDeleted.Add(work);
+			}
 		}
 	}
 

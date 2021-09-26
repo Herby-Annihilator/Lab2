@@ -6,7 +6,7 @@ namespace Lab2.Models.Data
 {
 	public class AdjacencyList
 	{
-		public List<int> Vertices { get; set; }
-		public Dictionary<int, List<Work>> Edges { get; set; }
+		public List<int> Vertices { get; set; } = new List<int>();
+		public Dictionary<int, List<Work>> Edges { get; set; } = new Dictionary<int, List<Work>>();
 	}
 }

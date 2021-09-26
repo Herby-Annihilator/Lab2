@@ -68,7 +68,7 @@
                 </DockPanel>
             </GroupBox>
             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <Button Content="→" Width="75"/>
+                <Button Content="→" Width="75" Command="{Binding ShowWindowCommand}"/>
             </StackPanel>
             <GroupBox Header="Вывод данных" Grid.Column="2">
                 <Grid>
