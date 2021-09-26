@@ -238,6 +238,8 @@ namespace Lab2.ViewModels
 		{
 			try
 			{
+				int startVertexIndex;
+				int endVertexIndex;
 				_workingTable = new List<Work>();
 				CopySourceTableToWorkingTable(SourceTable, _workingTable);
 				_workingTable.Sort(SortAscending);
@@ -340,9 +342,8 @@ namespace Lab2.ViewModels
 			}
 		}
 
-		private Work FindStartWork(List<Work> works)
+		private int FindStartVertex(List<Work> works)
 		{
-			Work result = null;
 			List<int> vertecies = GetVerteciesList(works);
 			List<int> startVertecies = new List<int>();
 			foreach (int vertex in vertecies)
@@ -354,13 +355,18 @@ namespace Lab2.ViewModels
 			}
 			if (startVertecies.Count > 1)
 			{
-
+				throw new SeveralVerticesFoundException("Найдено несколько " +
+					"начальных вершин")
+				{
+					Vertcies = startVertecies,
+					EditingMode = EditingMode.StartVertexMode
+				};
 			}
-			if (startVertecies.Count == 0)
+			else if (startVertecies.Count == 0)
 			{
-
+				throw new NoVerticesFoundException("Не найдено начальных вершин");
 			}
-			return result;
+			return startVertecies[0];
 		}
 
 		private List<int> GetVerteciesList(List<Work> works)
@@ -483,9 +489,24 @@ namespace Lab2.ViewModels
 			return result;
 		}
 
-		private void FindEndWork(List<Work> source)
+		private int FindEndWork(List<Work> source)
 		{
-
+			List<int> vertices = GetVerteciesList(source);
+			List<int> endVertices = new List<int>();
+			foreach (int vertex in vertices)
+			{
+				if (VertexHasNoOutsideEdges(source, vertex))
+					endVertices.Add(vertex);
+			}
+			if (endVertices.Count > 1)
+				throw new SeveralVerticesFoundException("Найдено несколько конечных вершин")
+				{
+					Vertcies = endVertices,
+					EditingMode = EditingMode.EndVertexMode
+				};
+			else if (endVertices.Count == 0)
+				throw new NoVerticesFoundException("Конечных вершин не найдено");
+			return endVertices[0];
 		}
 	}
 }
