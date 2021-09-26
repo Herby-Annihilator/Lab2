@@ -56,6 +56,7 @@ namespace Lab2.ViewModels
 		}
 
 		private bool _deletingVerticesIsNecessary = false;
+		private List<int> _deletedVertices = new List<int>();
 		public bool DeletingVerticesIsNecessary
 		{
 			get => _deletingVerticesIsNecessary;
@@ -72,6 +73,7 @@ namespace Lab2.ViewModels
 		public ObservableCollection<int> VerticesCanBeDeleted { get; set; } = 
 			new ObservableCollection<int>();
 
+		private bool _deletingCommandExecute = false;
 		private int _selectedVertexToDelete;
 		public int SelectedVertexToDelete
 		{
@@ -80,11 +82,12 @@ namespace Lab2.ViewModels
 			{
 				Set(ref _selectedVertexToDelete, value);
 				AdjacencyEdgesWillBeDeleted.Clear();
-				
+				_deletingCommandExecute = false;
 				List<Work> works;
 				if (!_exchanger.AdjacencyList.Edges
 					.TryGetValue(_selectedVertexToDelete, out works))
 					return;
+				_deletingCommandExecute = true;
 				foreach (Work work in works)
 				{
 					AdjacencyEdgesWillBeDeleted.Add(work);
@@ -151,9 +154,12 @@ namespace Lab2.ViewModels
 		public ICommand DeleteVerticesCommand { get; }
 		private void OnDeleteVerticesCommandExecuted(object p)
 		{
-			
+			_deletedVertices.Add(SelectedVertexToDelete);
+			VerticesCanBeDeleted.Remove(SelectedVertexToDelete);
+			AdjacencyEdgesWillBeDeleted.Clear();
+			_deletingCommandExecute = false;
 		}
-		private bool CanDeleteVerticesCommandExecute(object p) => true; 
+		private bool CanDeleteVerticesCommandExecute(object p) => _deletingCommandExecute; 
 		#endregion
 
 		#endregion
