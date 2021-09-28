@@ -245,13 +245,10 @@ namespace Lab2.ViewModels
 				_workingTable.Sort(SortAscending);
 				RemoveLoops(_workingTable);
 				RemoveRepeatedWorksFromTable(_workingTable);
-				//
-				// начальная работа есть в списке и находится в его начале
-				//
-				//Work startWork = FindStartWork(_workingTable.ToArray());
+				startVertexIndex = FindStartVertex(_workingTable);
 				FindCycles(_workingTable);
-				_workingTable = Streamline(_workingTable);
-				FindEndWork(_workingTable);
+				_workingTable = Streamline(_workingTable, startVertexIndex);
+				endVertexIndex = FindEndVertex(_workingTable);
 				FindCycles(_workingTable);
 				// найти полные пути и збс
 			}
@@ -461,11 +458,15 @@ namespace Lab2.ViewModels
 			}
 		}
 
-		private List<Work> Streamline(List<Work> source)
+		private List<Work> Streamline(List<Work> source, int startVertex)
 		{
 			List<int> processedVerticies = new List<int>();
-			List<Work> works = new List<Work>();
+			List<Work> works = new List<Work>();			
 			CopySourceTableToWorkingTable(source, works);
+			//
+			// найти начальную вершину в таблице и переместить все работы в начало
+			//
+			MoveStartWorksToTheBegining(source, startVertex);
 			List<Work> result = new List<Work>();
 			Queue<int> toProcess = new Queue<int>(source.Count / 2);
 			toProcess.Enqueue(works[0].FirstEventID);
@@ -489,7 +490,24 @@ namespace Lab2.ViewModels
 			return result;
 		}
 
-		private int FindEndWork(List<Work> source)
+		private void MoveStartWorksToTheBegining(List<Work> source, int startVertex)
+		{
+			List<Work> buffer = new List<Work>();
+			foreach (Work work in source)
+			{
+				if (work.FirstEventID == startVertex)
+				{
+					buffer.Add(work);
+				}
+			}
+			foreach (Work work in buffer)
+			{
+				source.Remove(work);
+			}
+			source.InsertRange(0, buffer);
+		}
+
+		private int FindEndVertex(List<Work> source)
 		{
 			List<int> vertices = GetVerteciesList(source);
 			List<int> endVertices = new List<int>();
