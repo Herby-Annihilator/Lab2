@@ -17,6 +17,8 @@ namespace Lab2.ViewModels
 	{
 		private Exchanger _exchanger;
 
+		private AdjacencyList _adjacencyList;
+
 		public EditingMode EditingMode { get; set; } = EditingMode.StartVertexMode;
 
 		public EditingWindowViewModel()
@@ -91,8 +93,7 @@ namespace Lab2.ViewModels
 				AdjacencyEdgesWillBeDeleted.Clear();
 				_deletingCommandExecute = false;
 				List<Work> works;
-				if (!_exchanger.AdjacencyList.Edges
-					.TryGetValue(_selectedVertexToDelete, out works))
+				if (!_adjacencyList.Edges.TryGetValue(_selectedVertexToDelete, out works))
 					return;
 				_deletingCommandExecute = true;
 				foreach (Work work in works)
@@ -297,10 +298,21 @@ namespace Lab2.ViewModels
 		{
 			VerticesCanBeDeleted.Clear();
 			AdjacencyEdgesWillBeDeleted.Clear();
-			foreach (var vertex in _exchanger.AdjacencyList.Vertices)
+			_adjacencyList = new AdjacencyList();
+			List<Work> works;
+			foreach (var vertex in _exchanger.Vertices)
 			{
 				VerticesCanBeDeleted.Add(vertex);
+				_adjacencyList.Vertices.Add(vertex);
+				works = new List<Work>();
+				foreach (Work work in _exchanger.CurrentTable)
+				{
+					if (work.FirstEventID == vertex || work.SecondEventID == vertex)
+						works.Add(work);
+				}
+				_adjacencyList.Edges.Add(vertex, works);
 			}
+
 			SelectedVertexToDelete = VerticesCanBeDeleted.Count > 0 ? VerticesCanBeDeleted[0] :
 				0;
 		}
@@ -308,9 +320,13 @@ namespace Lab2.ViewModels
 		private void PrepareEdgesDeleting()
 		{
 			WorksThatCanBeDeleted.Clear();
-			foreach (Work work in _exchanger.WorksThatCanBeDeleted)
+			foreach (int vertex in _exchanger.Vertices)
 			{
-				WorksThatCanBeDeleted.Add(work);
+				foreach (Work work in _exchanger.CurrentTable)
+				{
+					if (work.FirstEventID == vertex || work.SecondEventID == vertex)
+						WorksThatCanBeDeleted.Add(work);
+				}
 			}
 		}
 	}

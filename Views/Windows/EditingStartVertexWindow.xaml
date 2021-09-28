@@ -55,7 +55,7 @@
                     </Grid>
                 </GroupBox>
                 <GroupBox Grid.Column="1" Header="Удаление работ"
-                          IsEnabled="{Binding DeletingVerticesIsNecessary}">
+                          IsEnabled="{Binding DeletingEdgesIsNecessary}">
                     <DockPanel>
                         <TextBlock Text="Удаляемые работы" DockPanel.Dock="Top"/>
                         <Button Content="Удалить выбранную" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5"/>

@@ -250,14 +250,34 @@ namespace Lab2.ViewModels
 				_workingTable = Streamline(_workingTable, startVertexIndex);
 				endVertexIndex = FindEndVertex(_workingTable);
 				FindCycles(_workingTable);
-				// найти полные пути и збс
+				FindAllPaths(_workingTable, 0, startVertexIndex, endVertexIndex, new List<int>());
 			}
 			catch(CyclesFoundException e)
 			{
 				MessageBox.Show(e.ToString() + "\r\nИсправьте начальные данные", "Найден цикл", MessageBoxButton.OK, MessageBoxImage.Warning);
 				Log.Add(e.ToString());
 			}
-			catch (Exception e)
+			catch(SeveralVerticesFoundException e)
+			{
+				Window window = new EditingStartVertexWindow();
+				((EditingWindowViewModel)window.DataContext).MeaningLine = e.Message;
+				((EditingWindowViewModel)window.DataContext).EditingMode = e.EditingMode;
+				_exchanger.CurrentTable = _workingTable;
+				_exchanger.Vertices = e.Vertcies;
+				window.ShowDialog();
+				Log.Add("Открыто окно для редактирования");
+			}
+			catch(NoVerticesFoundException e)
+			{
+				Window window = new EditingStartVertexWindow();
+				((EditingWindowViewModel)window.DataContext).MeaningLine = e.Message;
+				((EditingWindowViewModel)window.DataContext).EditingMode = e.EditingMode;
+				_exchanger.CurrentTable = _workingTable;
+				_exchanger.Vertices = e.Vertcies;
+				window.ShowDialog();
+				Log.Add("Открыто окно для редактирования");
+			}
+			catch(Exception e)
 			{
 				Status = e.Message;
 				Log.Add(Status);
@@ -361,7 +381,10 @@ namespace Lab2.ViewModels
 			}
 			else if (startVertecies.Count == 0)
 			{
-				throw new NoVerticesFoundException("Не найдено начальных вершин");
+				throw new NoVerticesFoundException("Не найдено начальных вершин")
+				{
+					EditingMode = EditingMode.StartVertexMode
+				};
 			}
 			return startVertecies[0];
 		}
@@ -523,7 +546,10 @@ namespace Lab2.ViewModels
 					EditingMode = EditingMode.EndVertexMode
 				};
 			else if (endVertices.Count == 0)
-				throw new NoVerticesFoundException("Конечных вершин не найдено");
+				throw new NoVerticesFoundException("Конечных вершин не найдено")
+				{
+					EditingMode = EditingMode.EndVertexMode
+				};
 			return endVertices[0];
 		}
 

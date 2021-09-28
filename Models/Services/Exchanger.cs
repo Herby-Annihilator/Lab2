@@ -12,10 +12,6 @@ namespace Lab2.Models.Services
 	{
 		public List<int> Vertices { get; set; } = new List<int>();
 
-		public AdjacencyList AdjacencyList { get; set; } = new AdjacencyList();
-
-		public List<Work> WorksThatCanBeDeleted { get; set; } = new List<Work>();
-
 		public List<Work> CurrentTable { get; set; }
 	}
 }
