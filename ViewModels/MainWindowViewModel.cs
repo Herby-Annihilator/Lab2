@@ -526,5 +526,42 @@ namespace Lab2.ViewModels
 				throw new NoVerticesFoundException("Конечных вершин не найдено");
 			return endVertices[0];
 		}
+
+		private void FindAllPaths(List<Work> table, int currentWorkIndex, int currentVertex, int endVertex, List<int> currentPath)
+		{
+			currentPath.Add(currentVertex);
+			if (currentVertex == endVertex)
+			{
+				string path = "";
+				foreach (int vertex in currentPath)
+				{
+					path += vertex.ToString() + " ";
+				}
+				FullPathsInTheGraph.Add(path);
+				currentPath.Remove(currentVertex);
+				return;
+			}
+			int endIndex = currentWorkIndex;
+			for (int i = currentWorkIndex + 1; i < table.Count; i++)
+			{
+				if (table[i].FirstEventID != table[endIndex].FirstEventID)
+				{
+					endIndex = i;
+					break;
+				}
+			}
+			int nextWorkIndex;
+			for (int i = currentWorkIndex; i < endIndex; i++)
+			{
+				for (nextWorkIndex = i; nextWorkIndex < table.Count; nextWorkIndex++)
+				{
+					if (table[nextWorkIndex].FirstEventID == table[i].SecondEventID)
+						break;
+				}
+				FindAllPaths(table, nextWorkIndex, table[i].SecondEventID, endVertex, currentPath);
+			}
+			currentPath.Remove(currentVertex);
+			return;
+		}
 	}
 }
