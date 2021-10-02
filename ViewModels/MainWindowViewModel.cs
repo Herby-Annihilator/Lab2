@@ -70,7 +70,7 @@ namespace Lab2.ViewModels
 					EditingMode.EndVertexMode;
 				((EditingWindowViewModel)(window.DataContext)).MeaningLine = 
 					"Найдено несколько конечных вершин";
-				_exchanger.CurrentTable = _workingTable;
+				_exchanger.CurrentTable = new List<Work>();
 				window.ShowDialog();
 				Log.Add("Окно открыто");
 			}
@@ -332,7 +332,13 @@ namespace Lab2.ViewModels
 
 		private void RemoveRepeatedWorksFromTable(List<Work> works)
 		{
+			List<Work> toRemove = new List<Work>();
 			Work prevWork = null;
+			bool thereIsNoRepeatedWorks = false;
+			do
+			{
+
+			} while (!thereIsNoRepeatedWorks);
 			foreach (Work work in works)
 			{
 				if (prevWork == null)
@@ -344,18 +350,30 @@ namespace Lab2.ViewModels
 				{
 					if (prevWork.SecondEventID == work.SecondEventID)
 					{
-						if (prevWork.Length == work.Length)
+						if (prevWork.Length == work.Length)  // полное совпадение
 						{
-							_workingTable.Remove(prevWork);
-							Log.Add($"Работа {prevWork} удалена из-за повтора");
+							toRemove.Add(work);
 						}
-						else
+						else // частичное совпадение - нужно вмешательство пользователя
 						{
+							DeleteUselessWorkWindow dialog = new DeleteUselessWorkWindow(prevWork, work);
+							if (dialog.ShowDialog() == true)
+							{
 
+							}
+							else
+							{
+								throw new Exception("Отказ удалять частично совпадающие работы. Обработка завершена");
+							}
 						}
 					}
 				}
 				prevWork = work;
+			}
+			foreach (var work in toRemove)
+			{
+				works.Remove(work);
+				Log.Add($"Работа {prevWork} удалена из-за полного повтора");
 			}
 		}
 
@@ -404,13 +422,18 @@ namespace Lab2.ViewModels
 
 		private void RemoveLoops(List<Work> works)
 		{
+			List<Work> toRemove = new List<Work>();
 			foreach (Work work in works)
 			{
 				if (work.FirstEventID == work.SecondEventID)
 				{
-					works.Remove(work);
-					Log.Add($"Петля {work.FirstEventID} → {work.SecondEventID} удалена");
+					toRemove.Add(work);
 				}
+			}
+			foreach (Work work in toRemove)
+			{
+				works.Remove(work);
+				Log.Add($"Петля {work.FirstEventID} → {work.SecondEventID} удалена");
 			}
 		}
 
