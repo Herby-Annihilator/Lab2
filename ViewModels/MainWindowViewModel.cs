@@ -259,21 +259,21 @@ namespace Lab2.ViewModels
 			}
 			catch(SeveralVerticesFoundException e)
 			{
+				_exchanger.CurrentTable = _workingTable;
+				_exchanger.Vertices = e.Vertcies;
 				Window window = new EditingStartVertexWindow();
 				((EditingWindowViewModel)window.DataContext).MeaningLine = e.Message;
 				((EditingWindowViewModel)window.DataContext).EditingMode = e.EditingMode;
-				_exchanger.CurrentTable = _workingTable;
-				_exchanger.Vertices = e.Vertcies;
 				window.ShowDialog();
 				Log.Add("Открыто окно для редактирования");
 			}
 			catch(NoVerticesFoundException e)
 			{
+				_exchanger.CurrentTable = _workingTable;
+				_exchanger.Vertices = e.Vertcies;
 				Window window = new EditingStartVertexWindow();
 				((EditingWindowViewModel)window.DataContext).MeaningLine = e.Message;
 				((EditingWindowViewModel)window.DataContext).EditingMode = e.EditingMode;
-				_exchanger.CurrentTable = _workingTable;
-				_exchanger.Vertices = e.Vertcies;
 				window.ShowDialog();
 				Log.Add("Открыто окно для редактирования");
 			}
@@ -494,7 +494,7 @@ namespace Lab2.ViewModels
 		{
 			foreach (Work work in edges)
 			{
-				if (work.SecondEventID == vertexID)
+				if (work.FirstEventID == vertexID)
 					return false;
 			}
 			return true;
@@ -504,7 +504,7 @@ namespace Lab2.ViewModels
 		{
 			foreach (Work edge in edges)
 			{
-				if (edge.FirstEventID == vertexID)
+				if (edge.SecondEventID == vertexID)
 					return false;
 			}
 			return true;
