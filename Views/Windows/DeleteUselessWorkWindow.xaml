@@ -27,8 +27,10 @@
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Text="Обнауржены две похожие работы. Какую удалить?" Margin="5"/>
             <UniformGrid Grid.Row="1" Margin="5" Rows="2">
-                <RadioButton Checked="RadioButton_Checked" IsChecked="{Binding DeleteFirstWorkIsNecessary}" VerticalAlignment="Center"/>
-                <RadioButton Checked="RadioButton_Checked_1" IsChecked="{Binding DeleteSecondWorkIsNecessary}" VerticalAlignment="Center"/>
+                <RadioButton Checked="RadioButton_Checked" IsChecked="{Binding DeleteFirstWorkIsNecessary}" VerticalAlignment="Center"
+                             Content="{Binding FirstWorkToDelete}"/>
+                <RadioButton Checked="RadioButton_Checked_1" IsChecked="{Binding DeleteSecondWorkIsNecessary}" VerticalAlignment="Center"
+                             Content="{Binding SecondWorkToDelete}"/>
             </UniformGrid>
         </Grid>
     </DockPanel>

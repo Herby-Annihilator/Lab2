@@ -320,6 +320,11 @@ namespace Lab2.ViewModels
 		{
 			if (first.FirstEventID > second.FirstEventID) return 1;
 			if (first.FirstEventID < second.FirstEventID) return -1;
+			if (first.FirstEventID == second.FirstEventID)
+			{
+				if (first.SecondEventID > second.SecondEventID) return 1;
+				if (first.SecondEventID < second.SecondEventID) return -1;
+			}
 			return 0;
 		}
 
@@ -334,10 +339,10 @@ namespace Lab2.ViewModels
 		{
 			List<Work> toRemove = new List<Work>();
 			Work prevWork = null;
-			bool thereIsNoRepeatedWorks = false;
+			bool thereIsNoRepeatedWorks = true;
 			do
 			{
-				if (thereIsNoRepeatedWorks)
+				if (!thereIsNoRepeatedWorks)
 					works.Remove(_exchanger.SelectedWorkToRemove);
 				thereIsNoRepeatedWorks = true;
 				foreach (Work work in works)

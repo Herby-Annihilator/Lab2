@@ -34,7 +34,21 @@ namespace Lab2.Views.Windows
 				CanDeleteUselessWorkCommandExecute);
 		}
 
-		public ICommand DeleteUselessWorkCommand { get; }
+
+		public ICommand DeleteUselessWorkCommand
+		{
+			get { return (ICommand)GetValue(DeleteUselessWorkCommandProperty); }
+			set { SetValue(DeleteUselessWorkCommandProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for DeleteUselessWorkCommand.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty DeleteUselessWorkCommandProperty =
+			DependencyProperty.Register(
+				"DeleteUselessWorkCommand",
+				typeof(ICommand), 
+				typeof(DeleteUselessWorkWindow),
+				new PropertyMetadata(default(ICommand)));
+
 		private void OnDeleteUselessWorkCommandExecuted(object p)
 		{
 			this.DialogResult = true;
