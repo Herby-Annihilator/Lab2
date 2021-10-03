@@ -395,7 +395,7 @@ namespace Lab2.ViewModels
 				foreach (var work in toRemove)
 				{
 					works.Remove(work);
-					Log.Add($"Работа {prevWork} удалена из-за полного повтора");
+					Log.Add($"Работа {work} удалена из-за полного повтора");
 				}
 			} while (!thereIsNoRepeatedWorks);
 		}
