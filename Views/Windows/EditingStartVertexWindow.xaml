@@ -10,7 +10,7 @@
 
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom">
-            <StatusBarItem Content="{Binding Title}"/>
+            <StatusBarItem Content="{Binding Status}"/>
         </StatusBar>
         <Grid>
             <Grid.RowDefinitions>
@@ -51,15 +51,17 @@
                                 <ListBox Margin="0,3" ItemsSource="{Binding AdjacencyEdgesWillBeDeleted}"/>
                             </DockPanel>
                         </UniformGrid>
-                        <Button Grid.Row="1" Content="Удалить" Margin="0,5" HorizontalAlignment="Right" Width="125"/>
+                        <Button Grid.Row="1" Content="Удалить" Margin="0,5" HorizontalAlignment="Right" Width="125"
+                                Command="{Binding DeleteVerticesCommand}"/>
                     </Grid>
                 </GroupBox>
                 <GroupBox Grid.Column="1" Header="Удаление работ"
                           IsEnabled="{Binding DeletingEdgesIsNecessary}">
                     <DockPanel>
                         <TextBlock Text="Удаляемые работы" DockPanel.Dock="Top"/>
-                        <Button Content="Удалить выбранную" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5"/>
-                        <ListBox/>
+                        <Button Content="Удалить выбранную" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5"
+                                Command="{Binding DeleteEdgesCommand}"/>
+                        <ListBox ItemsSource="{Binding WorksThatCanBeDeleted}"/>
                     </DockPanel>
                 </GroupBox>
                 <GroupBox Grid.Column="2" Header="Добавление фиктивной вершины"
@@ -90,7 +92,8 @@
                         <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding FakeVertexIndex, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Индексы вершин, с которыми нужно соединить фиктивную" TextWrapping="Wrap"/>
                         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding IndexesToConnectWithFakeVertex, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Button Grid.Row="2" Grid.Column="1" Content="Создать" VerticalAlignment="Bottom" Margin="0,5"/>
+                        <Button Grid.Row="2" Grid.Column="1" Content="Создать" VerticalAlignment="Bottom" Margin="0,5"
+                                Command="{Binding AddFakeVertexCommand}"/>
                     </Grid>
                 </GroupBox>
             </Grid>

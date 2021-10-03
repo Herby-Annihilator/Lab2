@@ -160,7 +160,7 @@ namespace Lab2.ViewModels
 			catch(Exception e)
 			{
 				Status = e.Message;
-			}			
+			}
 		}
 		private bool CanAddFakeVertexCommandExecute(object p) => true;
 		#endregion
@@ -175,7 +175,7 @@ namespace Lab2.ViewModels
 				VerticesCanBeDeleted.Remove(SelectedVertexToDelete);
 				AdjacencyEdgesWillBeDeleted.Clear();
 				_deletingCommandExecute = false;
-				Status = $"Вершина {SelectedVertexToDelete} удалена";
+				Status = $"Вершина {SelectedVertexToDelete} удалена. Чтобы изменения вступили в силу, нажмите 'OK'";
 			}
 			catch(Exception e)
 			{
@@ -212,34 +212,38 @@ namespace Lab2.ViewModels
 		{
 			try
 			{
+				List<Work> toRemove = new List<Work>();
 				if (AddingFakeVertexIsNecessary)
 				{
 					if (EditingMode == EditingMode.StartVertexMode)
 						_exchanger.CurrentTable.InsertRange(0, _createdWorks);
 					else
 						_exchanger.CurrentTable.AddRange(_createdWorks);
-					Status = "Изменения применены";
 				}
 				else if (DeletingVerticesIsNecessary)
 				{
+					
 					foreach (int vertex in _deletedVertices)
 					{
 						foreach (Work work in _exchanger.CurrentTable)
 						{
 							if (work.FirstEventID == vertex || work.SecondEventID == vertex)
-								_exchanger.CurrentTable.Remove(work);
+								toRemove.Add(work);
 						}
-					}
-					Status = "Изменения применены";
+					}					
 				}
 				else if (DeletingEdgesIsNecessary)
 				{
 					foreach (Work work in _deletedWorks)
 					{
-						_exchanger.CurrentTable.Remove(work);
+						toRemove.Add(work);
 					}
-					Status = "Изменения применены";
 				}
+				foreach (var work in toRemove)
+				{
+					_exchanger.CurrentTable.Remove(work);
+				}
+				Status = "Изменения применены.";
 				App.ActivedWindow.Close();
 			}
 			catch (Exception e)

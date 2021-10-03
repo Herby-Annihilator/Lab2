@@ -264,8 +264,10 @@ namespace Lab2.ViewModels
 				Window window = new EditingStartVertexWindow();
 				((EditingWindowViewModel)window.DataContext).MeaningLine = e.Message;
 				((EditingWindowViewModel)window.DataContext).EditingMode = e.EditingMode;
-				window.ShowDialog();
 				Log.Add("Открыто окно для редактирования");
+				window.ShowDialog();				
+				_workingTable = _exchanger.CurrentTable;
+				Log.Add("Изменения применены");
 			}
 			catch(NoVerticesFoundException e)
 			{
@@ -274,8 +276,10 @@ namespace Lab2.ViewModels
 				Window window = new EditingStartVertexWindow();
 				((EditingWindowViewModel)window.DataContext).MeaningLine = e.Message;
 				((EditingWindowViewModel)window.DataContext).EditingMode = e.EditingMode;
-				window.ShowDialog();
 				Log.Add("Открыто окно для редактирования");
+				window.ShowDialog();
+				_workingTable = _exchanger.CurrentTable;
+				Log.Add("Изменения применены");
 			}
 			catch(Exception e)
 			{
@@ -343,7 +347,11 @@ namespace Lab2.ViewModels
 			do
 			{
 				if (!thereIsNoRepeatedWorks)
+				{
 					works.Remove(_exchanger.SelectedWorkToRemove);
+					Log.Add($"Работа {_exchanger.SelectedWorkToRemove} удалена");
+				}
+					
 				thereIsNoRepeatedWorks = true;
 				foreach (Work work in works)
 				{
