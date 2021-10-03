@@ -1,4 +1,7 @@
-﻿using Lab2.Models.Data;
+﻿using Lab2.Infrastructure.Commands;
+using Lab2.Models.Data;
+using Lab2.Models.Services;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,16 +21,35 @@ namespace Lab2.Views.Windows
 	/// </summary>
 	public partial class DeleteUselessWorkWindow : Window
 	{
-		public DeleteUselessWorkWindow(Work firstWork, Work secondWork)
+		private Exchanger _exchanger;
+		public DeleteUselessWorkWindow()
 		{
 			InitializeComponent();
-			FirstWorkToDelete = $"Удалить {firstWork}";
-			SecondWorkToDelete = $"Удалить {secondWork}";
+			_exchanger = App.Services.GetRequiredService<Exchanger>();
+			FirstWorkToDelete = $"Удалить {_exchanger.FirstWorkToRemove}";
+			SecondWorkToDelete = $"Удалить {_exchanger.SecondWorkToRemove}";
 			DeleteFirstWorkIsNecessary = true;
 			DeleteSecondWorkIsNecessary = false;
+			DeleteUselessWorkCommand = new LambdaCommand(OnDeleteUselessWorkCommandExecuted,
+				CanDeleteUselessWorkCommandExecute);
 		}
 
-
+		public ICommand DeleteUselessWorkCommand { get; }
+		private void OnDeleteUselessWorkCommandExecuted(object p)
+		{
+			this.DialogResult = true;
+			if (DeleteFirstWorkIsNecessary)
+			{
+				_exchanger.SelectedWorkToRemove = _exchanger.FirstWorkToRemove;
+			}
+			else
+			{
+				_exchanger.SelectedWorkToRemove = _exchanger.SecondWorkToRemove;
+			}
+			this.Close();
+		}
+		private bool CanDeleteUselessWorkCommandExecute(object p) => DeleteFirstWorkIsNecessary 
+			|| DeleteSecondWorkIsNecessary;
 
 		public string FirstWorkToDelete
 		{

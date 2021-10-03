@@ -10,8 +10,14 @@ namespace Lab2.Models.Services
 	/// </summary>
 	public class Exchanger
 	{
-		public List<int> Vertices { get; set; } = new List<int>();
+		public List<int> Vertices { get; set; }
 
 		public List<Work> CurrentTable { get; set; }
+
+		public Work FirstWorkToRemove { get; set; }
+
+		public Work SecondWorkToRemove { get; set; }
+
+		public Work SelectedWorkToRemove { get; set; }
 	}
 }

@@ -16,11 +16,9 @@
                     <cmd:CloseDialogCommand DialogResult="False"/>
                 </Button.Command>
             </Button>
-            <Button Content="Удалить" Width="75" Margin="5, 0" IsDefault="True" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
-                <Button.Command>
-                    <cmd:CloseDialogCommand DialogResult="True"/>
-                </Button.Command>
-            </Button>
+            <Button Content="Удалить" Width="75" Margin="5, 0" IsDefault="True"
+                    Command="{Binding DeleteUselessWorkCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
         </StackPanel>
         <Grid>
             <Grid.RowDefinitions>

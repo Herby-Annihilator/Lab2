@@ -337,44 +337,54 @@ namespace Lab2.ViewModels
 			bool thereIsNoRepeatedWorks = false;
 			do
 			{
-
-			} while (!thereIsNoRepeatedWorks);
-			foreach (Work work in works)
-			{
-				if (prevWork == null)
+				if (thereIsNoRepeatedWorks)
+					works.Remove(_exchanger.SelectedWorkToRemove);
+				thereIsNoRepeatedWorks = true;
+				foreach (Work work in works)
 				{
-					prevWork = work;
-					continue;
-				}
-				if (prevWork.FirstEventID == work.FirstEventID)
-				{
-					if (prevWork.SecondEventID == work.SecondEventID)
+					if (prevWork == null)
 					{
-						if (prevWork.Length == work.Length)  // полное совпадение
+						prevWork = work;
+						continue;
+					}
+					if (prevWork.FirstEventID == work.FirstEventID)
+					{
+						if (prevWork.SecondEventID == work.SecondEventID)
 						{
-							toRemove.Add(work);
-						}
-						else // частичное совпадение - нужно вмешательство пользователя
-						{
-							DeleteUselessWorkWindow dialog = new DeleteUselessWorkWindow(prevWork, work);
-							if (dialog.ShowDialog() == true)
+							if (prevWork.Length == work.Length)  // полное совпадение
 							{
-
+								toRemove.Add(work);
 							}
-							else
+							else // частичное совпадение - нужно вмешательство пользователя
 							{
-								throw new Exception("Отказ удалять частично совпадающие работы. Обработка завершена");
+								_exchanger.FirstWorkToRemove = prevWork;
+								_exchanger.SecondWorkToRemove = work;
+								_exchanger.SelectedWorkToRemove = null;
+								DeleteUselessWorkWindow dialog = new DeleteUselessWorkWindow();
+								if (dialog.ShowDialog() == true)
+								{
+									thereIsNoRepeatedWorks = false;
+									toRemove.Clear();
+									break;
+								}
+								else
+								{
+									_exchanger.FirstWorkToRemove = null;
+									_exchanger.SecondWorkToRemove = null;
+									_exchanger.SelectedWorkToRemove = null;
+									throw new Exception("Отказ удалять частично совпадающие работы. Обработка завершена");
+								}
 							}
 						}
 					}
+					prevWork = work;
 				}
-				prevWork = work;
-			}
-			foreach (var work in toRemove)
-			{
-				works.Remove(work);
-				Log.Add($"Работа {prevWork} удалена из-за полного повтора");
-			}
+				foreach (var work in toRemove)
+				{
+					works.Remove(work);
+					Log.Add($"Работа {prevWork} удалена из-за полного повтора");
+				}
+			} while (!thereIsNoRepeatedWorks);
 		}
 
 		private int FindStartVertex(List<Work> works)
