@@ -21,15 +21,53 @@ namespace Lab2.Models.Data
 			CyclingWorks = works;
 		}
 
+		private List<string> _cycles = new List<string>();
+
 		public override string ToString()
 		{
-			List<int> cycle = FindCycle();
-			string cycl = "";
-			for (int i = 0; i < cycle.Count; i++)
+			_cycles.Clear();
+			CyclingWorks.Sort((first, second) =>
 			{
-				cycl += $"{cycle[i]} ";
+				if (first.FirstEventID > second.FirstEventID) return 1;
+				if (first.FirstEventID < second.FirstEventID) return -1;
+				if (first.FirstEventID == second.FirstEventID)
+				{
+					if (first.SecondEventID > second.SecondEventID) return 1;
+					if (first.SecondEventID < second.SecondEventID) return -1;
+				}
+				return 0;
 			}
-			string result = "Найден цикл: " + cycl;
+			);
+			int startVertex;
+			int endVertex;
+			for (int i = 0; i < CyclingWorks.Count; i = GetNextWorkIndex(i))
+			{
+				startVertex = CyclingWorks[i].FirstEventID;
+				for (int j = 0; j < CyclingWorks.Count; j++)
+				{
+					if (CyclingWorks[j].SecondEventID == startVertex)
+					{
+						endVertex = CyclingWorks[j].FirstEventID;
+						FindCycles(CyclingWorks, i, startVertex, endVertex, new List<int>());
+					}
+				}
+			}
+			string result = "Найдены циклы:\r\n";
+			foreach (var item in _cycles)
+			{
+				result += item + "\r\n";
+			}
+			return result;
+		}
+
+		private int GetNextWorkIndex(int currentIndex)
+		{
+			int result = currentIndex;
+			for ( ; result < CyclingWorks.Count; result++)
+			{
+				if (CyclingWorks[currentIndex].FirstEventID != CyclingWorks[result].FirstEventID)
+					return result;
+			}
 			return result;
 		}
 
@@ -53,6 +91,45 @@ namespace Lab2.Models.Data
 				result.Add(currentVertex);
 			}
 			return result;
+		}
+
+
+		private void FindCycles(List<Work> table, int currentWorkIndex, int currentVertex, int endVertex, List<int> currentPath)
+		{
+			currentPath.Add(currentVertex);
+			if (currentVertex == endVertex)
+			{
+				string path = "";
+				foreach (int vertex in currentPath)
+				{
+					path += vertex.ToString() + " ";
+				}
+				path += currentPath[0].ToString();
+				_cycles.Add(path);
+				currentPath.Remove(currentVertex);
+				return;
+			}
+			int endIndex = currentWorkIndex;
+			for (int i = currentWorkIndex + 1; i < table.Count; i++)
+			{
+				if (table[i].FirstEventID != table[endIndex].FirstEventID)
+				{
+					endIndex = i;
+					break;
+				}
+			}
+			int nextWorkIndex;
+			for (int i = currentWorkIndex; i < endIndex; i++)
+			{
+				for (nextWorkIndex = i; nextWorkIndex < table.Count; nextWorkIndex++)
+				{
+					if (table[nextWorkIndex].FirstEventID == table[i].SecondEventID)
+						break;
+				}
+				FindCycles(table, nextWorkIndex, table[i].SecondEventID, endVertex, currentPath);
+			}
+			currentPath.Remove(currentVertex);
+			return;
 		}
 	}
 }

@@ -286,7 +286,7 @@ namespace Lab2.ViewModels
 			}
 			catch(CyclesFoundException e)
 			{
-				MessageBox.Show(e.ToString() + "\r\nИсправьте начальные данные", "Найден цикл", MessageBoxButton.OK, MessageBoxImage.Warning);
+				MessageBox.Show(e.ToString(), "Найден цикл", MessageBoxButton.OK, MessageBoxImage.Warning);
 				Log.Add(e.ToString());
 			}
 			catch(Exception e)

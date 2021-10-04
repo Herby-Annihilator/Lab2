@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lab2"
         mc:Ignorable="d"
-        Title="{Binding Title}" Height="450" Width="800"
+        Title="{Binding Title}" Height="543" Width="800"
         DataContext="{Binding MainWindowModel, Source={StaticResource Locator}}">
     <Window.Resources>
         <Style TargetType="DataGrid">
@@ -75,7 +75,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="4*"/>
                         <RowDefinition Height="3*"/>
-                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="3*"/>
                     </Grid.RowDefinitions>
                     <DockPanel Grid.Row="0" Margin="0,5">
                         <TextBlock Text="Частично упорядоченный график" DockPanel.Dock="Top"/>
