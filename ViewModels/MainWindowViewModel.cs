@@ -281,16 +281,14 @@ namespace Lab2.ViewModels
 						window.ShowDialog();
 						_workingTable = _exchanger.CurrentTable;
 						Log.Add("Изменения применены");
-					}				
+					}
 				}
-				
 			}
 			catch(CyclesFoundException e)
 			{
 				MessageBox.Show(e.ToString() + "\r\nИсправьте начальные данные", "Найден цикл", MessageBoxButton.OK, MessageBoxImage.Warning);
 				Log.Add(e.ToString());
 			}
-			
 			catch(Exception e)
 			{
 				Status = e.Message;
@@ -530,10 +528,15 @@ namespace Lab2.ViewModels
 
 		private void RemoveEdgeWithSpecifiedVertex(List<Work> works, int vertexID)
 		{
+			List<Work> toRemove = new List<Work>();
 			foreach (Work work in works)
 			{
 				if (work.FirstEventID == vertexID || work.SecondEventID == vertexID)
-					works.Remove(work);
+					toRemove.Add(work);
+			}
+			foreach (Work work in toRemove)
+			{
+				works.Remove(work);
 			}
 		}
 
