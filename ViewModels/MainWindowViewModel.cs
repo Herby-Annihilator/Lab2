@@ -240,47 +240,57 @@ namespace Lab2.ViewModels
 			{
 				int startVertexIndex;
 				int endVertexIndex;
+				bool isOk = false;
 				_workingTable = new List<Work>();
 				CopySourceTableToWorkingTable(SourceTable, _workingTable);
-				_workingTable.Sort(SortAscending);
-				RemoveLoops(_workingTable);
-				RemoveRepeatedWorksFromTable(_workingTable);
-				startVertexIndex = FindStartVertex(_workingTable);
-				FindCycles(_workingTable);
-				_workingTable = Streamline(_workingTable, startVertexIndex);
-				endVertexIndex = FindEndVertex(_workingTable);
-				FindCycles(_workingTable);
-				FindAllPaths(_workingTable, 0, startVertexIndex, endVertexIndex, new List<int>());
+				while (!isOk)
+				{
+					isOk = false;
+					_workingTable.Sort(SortAscending);
+					RemoveLoops(_workingTable);
+					RemoveRepeatedWorksFromTable(_workingTable);
+					try
+					{
+						startVertexIndex = FindStartVertex(_workingTable);
+						endVertexIndex = FindEndVertex(_workingTable);
+						isOk = true;
+						FindCycles(_workingTable);
+						_workingTable = Streamline(_workingTable, startVertexIndex);
+						FindAllPaths(_workingTable, 0, startVertexIndex, endVertexIndex, new List<int>());
+					}
+					catch (SeveralVerticesFoundException e)
+					{
+						_exchanger.CurrentTable = _workingTable;
+						_exchanger.Vertices = e.Vertcies;
+						Window window = new EditingStartVertexWindow();
+						((EditingWindowViewModel)window.DataContext).MeaningLine = e.Message;
+						((EditingWindowViewModel)window.DataContext).EditingMode = e.EditingMode;
+						Log.Add("Открыто окно для редактирования");
+						window.ShowDialog();
+						_workingTable = _exchanger.CurrentTable;
+						Log.Add("Изменения применены");
+					}
+					catch (NoVerticesFoundException e)
+					{
+						_exchanger.CurrentTable = _workingTable;
+						_exchanger.Vertices = e.Vertcies;
+						Window window = new EditingStartVertexWindow();
+						((EditingWindowViewModel)window.DataContext).MeaningLine = e.Message;
+						((EditingWindowViewModel)window.DataContext).EditingMode = e.EditingMode;
+						Log.Add("Открыто окно для редактирования");
+						window.ShowDialog();
+						_workingTable = _exchanger.CurrentTable;
+						Log.Add("Изменения применены");
+					}				
+				}
+				
 			}
 			catch(CyclesFoundException e)
 			{
 				MessageBox.Show(e.ToString() + "\r\nИсправьте начальные данные", "Найден цикл", MessageBoxButton.OK, MessageBoxImage.Warning);
 				Log.Add(e.ToString());
 			}
-			catch(SeveralVerticesFoundException e)
-			{
-				_exchanger.CurrentTable = _workingTable;
-				_exchanger.Vertices = e.Vertcies;
-				Window window = new EditingStartVertexWindow();
-				((EditingWindowViewModel)window.DataContext).MeaningLine = e.Message;
-				((EditingWindowViewModel)window.DataContext).EditingMode = e.EditingMode;
-				Log.Add("Открыто окно для редактирования");
-				window.ShowDialog();				
-				_workingTable = _exchanger.CurrentTable;
-				Log.Add("Изменения применены");
-			}
-			catch(NoVerticesFoundException e)
-			{
-				_exchanger.CurrentTable = _workingTable;
-				_exchanger.Vertices = e.Vertcies;
-				Window window = new EditingStartVertexWindow();
-				((EditingWindowViewModel)window.DataContext).MeaningLine = e.Message;
-				((EditingWindowViewModel)window.DataContext).EditingMode = e.EditingMode;
-				Log.Add("Открыто окно для редактирования");
-				window.ShowDialog();
-				_workingTable = _exchanger.CurrentTable;
-				Log.Add("Изменения применены");
-			}
+			
 			catch(Exception e)
 			{
 				Status = e.Message;
