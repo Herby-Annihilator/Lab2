@@ -257,6 +257,7 @@ namespace Lab2.ViewModels
 						FindCycles(_workingTable);
 						_workingTable = Streamline(_workingTable, startVertexIndex);
 						FindAllPaths(_workingTable, 0, startVertexIndex, endVertexIndex, new List<int>());
+						CopySourceTableToWorkingTable(_workingTable, FinalTable);
 					}
 					catch (SeveralVerticesFoundException e)
 					{
@@ -480,27 +481,19 @@ namespace Lab2.ViewModels
 			}
 			List<Work> edges = new List<Work>();
 			CopySourceTableToWorkingTable(works, edges);
-			bool vertexHasNoOutsideEdges = true;
-			bool vertexHasNoInsideEdges = true;
 			int currentVertex;
-			while ((vertexHasNoOutsideEdges || vertexHasNoInsideEdges) && edges.Count > 0)
+			int currentVertexIndex = 0;
+			while (currentVertexIndex < vertecies.Count)
 			{
-				currentVertex = vertecies[0];
-				vertexHasNoOutsideEdges = VertexHasNoOutsideEdges(edges, currentVertex);
-				if (vertexHasNoOutsideEdges)
+				currentVertex = vertecies[currentVertexIndex];
+				currentVertexIndex++;
+				if (VertexHasNoOutsideEdges(edges, currentVertex)
+					|| VerterxHasNoInsideEdges(edges, currentVertex))
 				{
 					RemoveEdgeWithSpecifiedVertex(edges, currentVertex);
 					vertecies.Remove(currentVertex);
+					currentVertexIndex = 0;
 				}
-				else
-				{
-					vertexHasNoInsideEdges = VerterxHasNoInsideEdges(edges, currentVertex);
-					if (vertexHasNoInsideEdges)
-					{
-						RemoveEdgeWithSpecifiedVertex(edges, currentVertex);
-						vertecies.Remove(currentVertex);
-					}
-				}				
 			}
 			if (edges.Count > 0)
 				throw new CyclesFoundException(edges, vertecies);
@@ -553,6 +546,7 @@ namespace Lab2.ViewModels
 			Queue<int> toProcess = new Queue<int>(source.Count / 2);
 			toProcess.Enqueue(works[0].FirstEventID);
 			int currentVertex;
+			List<Work> toRemove = new List<Work>();
 			while (toProcess.Count > 0)
 			{
 				currentVertex = toProcess.Dequeue();
@@ -562,12 +556,17 @@ namespace Lab2.ViewModels
 					{
 						if (!processedVerticies.Contains(work.SecondEventID))
 						{
-							toProcess.Enqueue(work.SecondEventID);							
+							toProcess.Enqueue(work.SecondEventID);
 						}
 						result.Add(work);
-						works.Remove(work);
+						toRemove.Add(work);
 					}
-				}			
+				}
+				foreach (var item in toRemove)
+				{
+					works.Remove(item);
+				}
+				toRemove.Clear();
 			}
 			return result;
 		}
