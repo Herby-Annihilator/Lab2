@@ -637,7 +637,7 @@ namespace Lab2.ViewModels
 			int nextWorkIndex;
 			for (int i = currentWorkIndex; i < endIndex; i++)
 			{
-				for (nextWorkIndex = i; nextWorkIndex < table.Count; nextWorkIndex++)
+				for (nextWorkIndex = 0; nextWorkIndex < table.Count; nextWorkIndex++)
 				{
 					if (table[nextWorkIndex].FirstEventID == table[i].SecondEventID)
 						break;
