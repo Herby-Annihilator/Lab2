@@ -99,7 +99,7 @@ namespace Lab2.Models.Data
 			int nextBlockIndex;
 			for (int i = blockStartIndex; i < blockEndIndex && i < table.Count; i++)  // обходим блок
 			{
-				for (nextBlockIndex = i; nextBlockIndex < table.Count; nextBlockIndex++)
+				for (nextBlockIndex = 0; nextBlockIndex < table.Count; nextBlockIndex++)
 				{
 					if (table[nextBlockIndex].FirstEventID == table[i].SecondEventID)
 						break;
