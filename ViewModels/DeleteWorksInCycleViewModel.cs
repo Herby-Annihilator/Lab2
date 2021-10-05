@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Markup;
 
@@ -52,25 +53,30 @@ namespace Lab2.ViewModels
 		{
 			foreach (var item in toRemove)
 			{
-				_exchanger.CurrentTable.Remove(item);
-				_exchanger.Log.Add($"Робота {item} удалена");
+				_exchanger.CurrentTable.RemoveAt(_exchanger.CurrentTable.FindIndex(work =>
+					work.FirstEventID == item.FirstEventID
+					&& work.SecondEventID == item.SecondEventID
+					&& work.Length == item.Length
+				));
+				_exchanger.Log.Add($"Работа {item} удалена");
 			}
 			_exchanger.Log.Add("Изменения применены");
-			App.ActivedWindow.DialogResult = true;
-			App.ActivedWindow.Close();
+
+			var window = (Window)p;
+			window.Close();
 		}
-		private bool CanAcceptChangesCommandExecute(object p) => toRemove.Count > 0;
+		private bool CanAcceptChangesCommandExecute(object p) => toRemove.Count > 0 && p is Window;
 		#endregion
 
 		#region CancelCommand
 		public ICommand CancelCommand { get; }
 		private void OnCancelCommandExecuted(object p)
 		{
-			App.ActivedWindow.DialogResult = false;
+			var window = (Window)p;
+			window.Close();
 			_exchanger.Log.Add("Работы не были удалены");
-			App.ActivedWindow.Close();
 		}
-		private bool CanCancelCommandExecute(object p) => true;
+		private bool CanCancelCommandExecute(object p) => p is Window;
 		#endregion
 
 		private void PrepareList()

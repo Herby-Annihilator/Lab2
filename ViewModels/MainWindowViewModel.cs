@@ -32,9 +32,6 @@ namespace Lab2.ViewModels
 			ClearFinalTableCommand = new LambdaCommand(OnClearFinalTableCommandExecuted, CanClearFinalTableCommandExecute);
 			ClearListBoxCommand = new LambdaCommand(OnClearListBoxCommandExecuted, CanClearListBoxCommandExecute);
 			StreamlineCommand = new LambdaCommand(OnStreamlineCommandExecuted, CanStreamlineCommandExecute);
-			FullPathsInTheGraph.Add("4, 5, 9, 8, 10");
-			ShowWindowCommand = new LambdaCommand(OnShowWindowCommandExecuted,
-				CanShowWindowCommandExecute);
 		}
 
 		#region Properties
@@ -60,30 +57,6 @@ namespace Lab2.ViewModels
 		#endregion
 
 		#region Commands
-
-		#region ShowWindowCommand
-		public ICommand ShowWindowCommand { get; }
-		private void OnShowWindowCommandExecuted(object p)
-		{
-			try
-			{
-				Window window = new EditingStartVertexWindow();
-				((EditingWindowViewModel)(window.DataContext)).EditingMode = 
-					EditingMode.EndVertexMode;
-				((EditingWindowViewModel)(window.DataContext)).MeaningLine = 
-					"Найдено несколько конечных вершин";
-				_exchanger.CurrentTable = new List<Work>();
-				window.ShowDialog();
-				Log.Add("Окно открыто");
-			}
-			catch (Exception e)
-			{
-				Status = e.Message;
-				Log.Add(Status);
-			}
-		}
-		private bool CanShowWindowCommandExecute(object p) => true; 
-		#endregion
 
 		#region AddWorkCommand
 		public ICommand AddWorkCommand { get; }
@@ -247,18 +220,18 @@ namespace Lab2.ViewModels
 				CopySourceTableToWorkingTable(SourceTable, _workingTable);
 				while (!isOk)
 				{
-					isOk = false;
-					_workingTable.Sort(SortAscending);
-					RemoveLoops(_workingTable);
-					RemoveRepeatedWorksFromTable(_workingTable);
+					isOk = false;					
 					try
 					{
+						_workingTable.Sort(SortAscending);
+						RemoveLoops(_workingTable);
+						RemoveRepeatedWorksFromTable(_workingTable);
 						startVertexIndex = FindStartVertex(_workingTable);
-						endVertexIndex = FindEndVertex(_workingTable);
-						isOk = true;
+						endVertexIndex = FindEndVertex(_workingTable);						
 						FindCycles(_workingTable);
 						_workingTable = Streamline(_workingTable, startVertexIndex);
 						FindAllPaths(_workingTable, 0, startVertexIndex, endVertexIndex, new List<int>());
+						isOk = true;
 						CopySourceTableToWorkingTable(_workingTable, FinalTable);
 					}
 					catch (SeveralVerticesFoundException e)
@@ -268,6 +241,7 @@ namespace Lab2.ViewModels
 						Window window = new EditingStartVertexWindow();
 						((EditingWindowViewModel)window.DataContext).MeaningLine = e.Message;
 						((EditingWindowViewModel)window.DataContext).EditingMode = e.EditingMode;
+						Log.Add("Найдено несколько неправильных событий");
 						Log.Add("Открыто окно для редактирования");
 						window.ShowDialog();
 						_workingTable = _exchanger.CurrentTable;
@@ -280,18 +254,24 @@ namespace Lab2.ViewModels
 						Window window = new EditingStartVertexWindow();
 						((EditingWindowViewModel)window.DataContext).MeaningLine = e.Message;
 						((EditingWindowViewModel)window.DataContext).EditingMode = e.EditingMode;
+						Log.Add("Не найдено требуемого события");
 						Log.Add("Открыто окно для редактирования");
 						window.ShowDialog();
 						_workingTable = _exchanger.CurrentTable;
 						Log.Add("Изменения применены");
 					}
+					catch (CyclesFoundException e)
+					{
+						_exchanger.CurrentTable = _workingTable;
+						_exchanger.Vertices = e.CyclingVertecies;
+						_exchanger.WorksInCycles = e.CyclingWorks;
+						Window window = new DeleteWorksInCycleWindow();
+						Log.Add("Открыто окно для борьбы с циклами");
+						window.ShowDialog();
+						_workingTable = _exchanger.CurrentTable;
+					}
 				}
-			}
-			catch(CyclesFoundException e)
-			{
-				MessageBox.Show(e.ToString(), "Найден цикл", MessageBoxButton.OK, MessageBoxImage.Warning);
-				Log.Add(e.ToString());
-			}
+			}			
 			catch(Exception e)
 			{
 				Status = e.Message;

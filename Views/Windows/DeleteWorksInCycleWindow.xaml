@@ -30,10 +30,10 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <TextBlock Text="Удалите одну или несколько работ, чтобы избавиться от цикла(ов)" Margin="3"/>
-            <Button Content="Отмена" HorizontalAlignment="Left" Grid.Row="1" Command="{Binding CancelCommand}"/>
+            <Button Content="Отмена" HorizontalAlignment="Left" Grid.Row="1" Command="{Binding CancelCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="1">
                 <Button Content="Удалить выбранную" Command="{Binding DeleteSelectedWorkCommand}"/>
-                <Button Content="Применить изменения" Command="{Binding AcceptChangesCommand}"/>
+                <Button Content="Применить изменения" Command="{Binding AcceptChangesCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
             </StackPanel>
         </Grid>
         <ListBox ItemsSource="{Binding WorksInCycles}" SelectedItem="{Binding SelectedWork}"/>
