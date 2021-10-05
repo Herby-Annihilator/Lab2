@@ -611,7 +611,7 @@ namespace Lab2.ViewModels
 			return endVertices[0];
 		}
 
-		private void FindAllPaths(List<Work> table, int currentWorkIndex, int currentVertex, int endVertex, List<int> currentPath)
+		private void FindAllPaths(List<Work> table, int blockStartIndex, int currentVertex, int endVertex, List<int> currentPath)
 		{
 			currentPath.Add(currentVertex);
 			if (currentVertex == endVertex)
@@ -625,24 +625,24 @@ namespace Lab2.ViewModels
 				currentPath.Remove(currentVertex);
 				return;
 			}
-			int endIndex = currentWorkIndex;
-			for (int i = currentWorkIndex + 1; i < table.Count; i++)
+			int blockEndIndex = blockStartIndex + 1;
+			for ( ; blockEndIndex < table.Count; blockEndIndex++) // поиск конца блока работ
 			{
-				if (table[i].FirstEventID != table[endIndex].FirstEventID)
+				if (table[blockEndIndex].FirstEventID != table[blockStartIndex].FirstEventID)
 				{
-					endIndex = i;
 					break;
 				}
 			}
-			int nextWorkIndex;
-			for (int i = currentWorkIndex; i < endIndex; i++)
+			int nextBlockIndex;
+			for (int i = blockStartIndex; i < blockEndIndex && i < table.Count; i++) // обход блока работ
 			{
-				for (nextWorkIndex = 0; nextWorkIndex < table.Count; nextWorkIndex++)
+				// найти блок, к которому принадлежит следующее событие
+				for (nextBlockIndex = 0; nextBlockIndex < table.Count; nextBlockIndex++)
 				{
-					if (table[nextWorkIndex].FirstEventID == table[i].SecondEventID)
+					if (table[nextBlockIndex].FirstEventID == table[i].SecondEventID)
 						break;
 				}
-				FindAllPaths(table, nextWorkIndex, table[i].SecondEventID, endVertex, currentPath);
+				FindAllPaths(table, nextBlockIndex, table[i].SecondEventID, endVertex, currentPath);
 			}
 			currentPath.Remove(currentVertex);
 			return;
