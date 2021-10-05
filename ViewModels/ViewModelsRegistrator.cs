@@ -7,9 +7,11 @@ namespace Lab2.ViewModels
 {
 	public static class ViewModelsRegistrator
 	{
-		public static IServiceCollection AddViewModels(this IServiceCollection services) => services
-		   .AddSingleton<MainWindowViewModel>()
+		public static IServiceCollection AddViewModels(this IServiceCollection services) => 
+			services
+			.AddSingleton<MainWindowViewModel>()
 			.AddTransient<EditingWindowViewModel>()
+			.AddTransient<DeleteWorksInCycleViewModel>()
 		;
 	}
 }

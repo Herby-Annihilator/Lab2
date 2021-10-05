@@ -19,9 +19,11 @@ namespace Lab2.ViewModels
 	[MarkupExtensionReturnType(typeof(MainWindowViewModel))]
 	public class MainWindowViewModel : ViewModel
 	{
-		private Exchanger _exchanger = App.Services.GetRequiredService<Exchanger>();
+		private Exchanger _exchanger;
 		public MainWindowViewModel()
 		{
+			_exchanger = App.Services.GetRequiredService<Exchanger>();
+			_exchanger.Log = Log;
 			AddWorkCommand = new LambdaCommand(OnAddWorkCommandExecuted, CanAddWorkCommandExecute);
 			RemoveSelectedWorkCommand = new LambdaCommand(OnRemoveSelectedWorkCommandExecuted, CanRemoveSelectedWorkCommandExecute);
 			ClearSourceTableCommand = new LambdaCommand(OnClearSourceTableCommandExecuted, CanClearSourceTableCommandExecute);

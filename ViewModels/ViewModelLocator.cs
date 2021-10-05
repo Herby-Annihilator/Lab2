@@ -12,5 +12,8 @@ namespace Lab2.ViewModels
 		
 		public EditingWindowViewModel EditingWindowModel => 
 			App.Services.GetRequiredService<EditingWindowViewModel>();
+
+		public DeleteWorksInCycleViewModel DeleteWorksInCycleViewModel =>
+			App.Services.GetRequiredService<DeleteWorksInCycleViewModel>();
 	}
 }

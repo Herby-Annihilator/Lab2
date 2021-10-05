@@ -1,6 +1,7 @@
 ﻿using Lab2.Models.Data;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 
 namespace Lab2.Models.Services
@@ -14,10 +15,14 @@ namespace Lab2.Models.Services
 
 		public List<Work> CurrentTable { get; set; }
 
+		public List<Work> WorksInCycles { get; set; }
+
 		public Work FirstWorkToRemove { get; set; }
 
 		public Work SecondWorkToRemove { get; set; }
 
 		public Work SelectedWorkToRemove { get; set; }
+
+		public ObservableCollection<string> Log { get; set; }
 	}
 }
