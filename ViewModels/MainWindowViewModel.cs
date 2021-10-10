@@ -523,7 +523,7 @@ namespace Lab2.ViewModels
 			//
 			// найти начальную вершину в таблице и переместить все работы в начало
 			//
-			MoveStartWorksToTheBegining(source, startVertex);
+			MoveStartWorksToTheBegining(works, startVertex);
 			List<Work> result = new List<Work>();
 			Queue<int> toProcess = new Queue<int>(source.Count / 2);
 			toProcess.Enqueue(works[0].FirstEventID);
